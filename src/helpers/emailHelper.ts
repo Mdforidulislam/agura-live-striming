@@ -7,6 +7,9 @@ const transporter = nodemailer.createTransport({
   host: config.email.host,
   port: Number(config.email.port),
   secure: false,
+  // your config
+  logger: true,
+  debug: true,
   auth: {
     user: config.email.user,
     pass: config.email.pass,
