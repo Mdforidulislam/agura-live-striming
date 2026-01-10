@@ -27,7 +27,7 @@ router.post(
 ============================ */
 
 router.post(
-  "/:roomId/join",
+  "/join-room",
   auth(USER_ROLES.USER),
   joinRoom
 );

@@ -11,10 +11,12 @@ import { RoomMember } from "../../modules/room/room.model";
 ========================= */
 
 const roomHandler = (io: Server, socket: Socket) => {
-
+        console.log('call the custom server ::>');
   // ===== Promote Audience → Guest =====
   socket.on("promote-to-guest", async ({ roomId, hostId, targetUserId }: { roomId: string; hostId: string; targetUserId: string }) => {
     try {
+
+        console.log(roomId, hostId, targetUserId,'checking user id =============>');
       const host = await RoomMember.findOne({
         roomId,
         userId: hostId,
@@ -50,7 +52,7 @@ const roomHandler = (io: Server, socket: Socket) => {
         role: "PUBLISHER",
       });
 
-      io.to(targetUserId).emit("agora-token-update", {
+      socket.emit("agora-token-update", {
         token: agoraToken,
         role: "GUEST",
       });
@@ -63,19 +65,19 @@ const roomHandler = (io: Server, socket: Socket) => {
     }
   });
 
-  // ===== Leave Room =====
-  socket.on("leave-room", async ({ roomId, userId }: { roomId: string; userId: string }) => {
-    try {
-      socket.leave(roomId);
+//   // ===== Leave Room =====
+//   socket.on("leave-room", async ({ roomId, userId }: { roomId: string; userId: string }) => {
+//     try {
+//       socket.leave(roomId);
 
-      await RoomMember.updateOne({ roomId, userId }, { status: "LEFT" });
+//       await RoomMember.updateOne({ roomId, userId }, { status: "LEFT" });
 
-      socket.to(roomId).emit("user-left", { userId });
-    } catch (err: any) {
-      console.error("Leave room error:", err);
-      socket.emit("error", { message: err.message || "Leave room failed" });
-    }
-  });
+//       socket.to(roomId).emit("user-left", { userId });
+//     } catch (err: any) {
+//       console.error("Leave room error:", err);
+//       socket.emit("error", { message: err.message || "Leave room failed" });
+//     }
+//   });
 
 };
 

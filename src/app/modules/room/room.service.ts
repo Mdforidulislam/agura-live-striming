@@ -52,7 +52,10 @@ export const createRoomService = async ({
       role: "PUBLISHER"
     });
 
-    return agora;
+    return {
+        room,
+        agoraToken: agora
+    };
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
@@ -71,6 +74,8 @@ export const joinRoomAsAudienceService = async ({
   roomId: string;
   userId: number;
 }) => {
+
+    console.log(roomId,userId,'checking userid and room id ============>');
   const room = await Room.findById(roomId);
   if (!room || room.status !== "ACTIVE") {
     throw new Error("Room not available");

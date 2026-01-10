@@ -11,7 +11,7 @@ const auth = (...roles: string[]) => {
     try {
       // Extracting token from authorization header
       const token = req.headers.authorization;
-      if (!token || !token.startsWith('Bearer ')) {
+      if (!token) {
         throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized');
       }
 

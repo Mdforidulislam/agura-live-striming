@@ -9,6 +9,7 @@ import config from './config';
 import { socketHelper } from './helpers/socketHelper';
 import { errorLogger, logger } from './shared/logger';
 import seedAdmin from './DB';
+import { socketInilization } from './app/socket/socket.intilization';
 
 //uncaught exception
 process.on('uncaughtException', error => {
@@ -40,7 +41,9 @@ async function main() {
         origin: '*',
       },
     });
-    socketHelper.socket(io);
+
+    // socket inilization 
+    socketInilization(io);
     //@ts-ignore
     global.io = io;
   } catch (error) {

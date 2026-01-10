@@ -34,7 +34,7 @@ export const createRoom = async (req: Request, res: Response) => {
 export const joinRoom = async (req: Request, res: Response) => {
   try {
     const userId = req.user.id;
-    const { roomId } = req.params;
+    const { roomId } = req.body;
 
     const member = await joinRoomAsAudienceService({
       roomId,

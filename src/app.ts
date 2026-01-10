@@ -4,14 +4,14 @@ import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import router from './routes';
 import { Morgan } from './shared/morgen';
 import notFoundRoute from './app/middlewares/notFoundRoute';
-import { initSocket } from './app/socket';
 import http from 'http'
 
 const app = express();
 
 // Create HTTP server from Express
 const server = http.createServer(app);
-
+// Initialize Socket.io
+// initSocket(server);
 //morgan
 app.use(Morgan.successHandler);
 app.use(Morgan.errorHandler);
@@ -30,8 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 //file retrieve
 app.use(express.static('uploads'));
 
-// Initialize Socket.io
-initSocket(server);
+
 //router
 app.use('/api/v1', router);
 
