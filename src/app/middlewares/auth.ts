@@ -10,14 +10,12 @@ const auth = (...roles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Extracting token from authorization header
-      const tokenWithBearer = req.headers.authorization;
-      if (!tokenWithBearer || !tokenWithBearer.startsWith('Bearer ')) {
+      const token = req.headers.authorization;
+      if (!token || !token.startsWith('Bearer ')) {
         throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized');
       }
 
-      // Get the token
-      const token = tokenWithBearer.split(' ')[1];
-
+ 
       // Verify the token using the jwtHelper
       let decodedUser;
       try {
