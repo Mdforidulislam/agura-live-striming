@@ -16,9 +16,9 @@ interface Payload {
   [key: string]: any;
 }
 
-const createToken = (payload: Payload, secret: Secret, expireTime: string | number): string => {
+const createToken = (payload: Payload, secret: Secret, expireTime: any): string => {
   const options: SignOptions = { 
-    expiresIn: expireTime as unknown as string // type-cast to satisfy TS
+    expiresIn: expireTime as any// type-cast to satisfy TS
   };
   return jwt.sign(payload, secret, options);
 };
