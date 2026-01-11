@@ -15,4 +15,5 @@ export const socketInilization = (io: Server) => {
                 console.log(data,'checking data here ====++++>');
              });
          });
+         
 }
