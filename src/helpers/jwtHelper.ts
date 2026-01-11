@@ -17,12 +17,12 @@ interface Payload {
   [key: string]: any; // generic payload object
 }
 
-const createToken = (payload: Payload, secret: Secret, expireTime: string | number): string => {
+const createToken = (payload: Payload, secret: any, expireTime: string | number): string => {
   const options: SignOptions = { expiresIn: expireTime };
   return jwt.sign(payload, secret, options);
 };
 
-const verifyToken = (token: string, secret: Secret): JwtPayload | null => {
+const verifyToken = (token: string, secret: any): JwtPayload | null => {
   try {
     const decoded = jwt.verify(token, secret) as JwtPayload;
     return decoded;
