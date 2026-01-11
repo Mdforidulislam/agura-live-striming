@@ -1,6 +1,7 @@
+import { Server, Socket } from 'socket.io';
 import { MessageModel } from "./message.model";
 
-export const messageHandler = (io: any, socket: any) => {
+export const messageHandler = (io: Server, socket: Socket) => {
   try {
     
     // =========================

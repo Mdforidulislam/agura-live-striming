@@ -21,7 +21,8 @@ const createUserFromDb = async (payload: IUser) => {
     throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to create user');
   }
 
-  const otp = generateOTP();
+  // const otp = generateOTP();
+  const otp = 100200;
   const emailValues = {
     name: result.name,
     otp,
@@ -108,6 +109,8 @@ const updateProfileToDB = async (
   if (payload.image && isExistUser.image) {
     unlinkFile(isExistUser.image);
   }
+
+  console.log(payload,'checking payload here ======<>');
 
   const updateDoc = await User.findOneAndUpdate({ _id: id }, payload, {
     new: true,

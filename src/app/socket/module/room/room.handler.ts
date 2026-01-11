@@ -6,9 +6,9 @@ import { Room, RoomMember } from "../../../modules/room/room.model";
    ROOM HANDLER
    Handles:
    - Join room
-   - Leave room
+   - Leave room 
    - Promote audience → guest
-   - 
+   - message 
 ========================= */
 
 const roomHandler = (io: Server, socket: Socket) => {
@@ -59,7 +59,7 @@ const roomHandler = (io: Server, socket: Socket) => {
   socket.on("promote-to-guest", async ({ roomId, hostId, targetUserId }: { roomId: string; hostId: string; targetUserId: string }) => {
     try {
 
-        console.log(roomId, hostId, targetUserId,'checking user id =============>');
+      console.log(roomId, hostId, targetUserId,'checking user id =============>');
       const host = await RoomMember.findOne({
         roomId,
         userId: hostId,
@@ -122,45 +122,6 @@ const roomHandler = (io: Server, socket: Socket) => {
       socket.emit("error", { message: err.message || "Leave room failed" });
     }
   });
-
-  // ===== ROOM MESSAGE =====
-  socket.on("room-message",
-    async ({
-      roomId,
-      userId,
-      message
-    }: {
-      roomId: string;
-      userId: string;
-      message: string;
-    }) => {
-      try {
-        if (!message?.trim()) return;
-
-        // optional: validate user still joined
-        const member = await RoomMember.findOne({
-          roomId,
-          userId,
-          status: "JOINED"
-        });
-
-        if (!member) return;
-
-        const payload = {
-          roomId,
-          userId,
-          message,
-          role: member.role,
-          createdAt: new Date()
-        };
-
-        io.to(roomId).emit("room-message-receive", payload);
-      } catch (err) {
-        socket.emit("error", { message: "Message failed" });
-      }
-    }
-  );
-  
 }
 
 
