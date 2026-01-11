@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
-import { generateAgoraToken } from "../../../helpers/generateAgoraToken";
-import { Room, RoomMember } from "../../modules/room/room.model";
+import { generateAgoraToken } from "../../../../helpers/generateAgoraToken";
+import { Room, RoomMember } from "../../../modules/room/room.model";
 
 /* =========================
    ROOM HANDLER
@@ -55,7 +55,7 @@ const roomHandler = (io: Server, socket: Socket) => {
     }
   });
 
-  // ===== Promote Audience → Guest =====
+  // ===== Promote Audience  Guest =====
   socket.on("promote-to-guest", async ({ roomId, hostId, targetUserId }: { roomId: string; hostId: string; targetUserId: string }) => {
     try {
 
@@ -160,7 +160,7 @@ const roomHandler = (io: Server, socket: Socket) => {
       }
     }
   );
-
+  
 }
 
 
