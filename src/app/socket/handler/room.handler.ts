@@ -8,6 +8,7 @@ import { Room, RoomMember } from "../../modules/room/room.model";
    - Join room
    - Leave room
    - Promote audience → guest
+   - 
 ========================= */
 
 const roomHandler = (io: Server, socket: Socket) => {
@@ -18,6 +19,7 @@ const roomHandler = (io: Server, socket: Socket) => {
   // ================================
   socket.on("join-room", async ({ roomId }) => {
     try {
+
       if (!roomId) {
         return socket.emit("room-user-list-error", {
           message: "roomId is required"
@@ -122,8 +124,7 @@ const roomHandler = (io: Server, socket: Socket) => {
   });
 
   // ===== ROOM MESSAGE =====
-  socket.on(
-    "room-message",
+  socket.on("room-message",
     async ({
       roomId,
       userId,
@@ -161,7 +162,6 @@ const roomHandler = (io: Server, socket: Socket) => {
   );
 
 }
-
 
 
 export default roomHandler;

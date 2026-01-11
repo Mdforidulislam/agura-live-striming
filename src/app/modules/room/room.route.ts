@@ -43,23 +43,22 @@ router.get(
 )
 
 router.get(
-  "/room-user-list",
+  "/room-user-list/:roomId",
   auth(USER_ROLES.USER),
   getRoomUserList
 )
 
 router.put(
-  "/update-room:/id",
+  "/update-room/:id",
   auth(USER_ROLES.USER),
   updateRoom
 );
 
 router.delete(
-  "/deleteRoom:/id",
+  "/deleteRoom/:id",
   auth(USER_ROLES.USER),
   deleteRoom
 )
-
 
 
 export const RoomRoutes = router;

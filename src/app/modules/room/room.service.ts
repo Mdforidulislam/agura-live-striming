@@ -150,7 +150,7 @@ export const getRoomUserListService = async (roomId: string) => {
     roomId,
     status: "JOINED"
   })
-    .populate("userId", "name email avatar")
+    .populate("userId", "name email image")
     .select("userId role status createdAt")
     .sort({ createdAt: 1 });
 
