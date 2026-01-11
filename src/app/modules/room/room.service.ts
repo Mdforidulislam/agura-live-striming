@@ -101,6 +101,84 @@ export const joinRoomAsAudienceService = async ({
       role: "PUBLISHER"
     });
 
-  return agora;
+    return {
+        room,
+        agoraToken: agora
+    };
 };
 
+/* =========================
+   GET ALL ROOMS
+========================= */
+
+export const getAllRoomsService = async () => {
+  return await Room.find()
+    .populate("hostId", "name email image")
+    .sort({ createdAt: -1 });
+};
+
+/* =========================
+   UPDATE ROOM
+========================= */
+
+export const updateRoomService = async (
+  roomId: string,
+  payload: {
+    roomName?: string;
+    status?: "ACTIVE" | "ENDED" | "BLOCKED";
+    settings?: {
+      canInviteGuest?: boolean;
+      audienceCanComment?: boolean;
+    };
+  }
+) => {
+  const room = await Room.findById(roomId);
+  if (!room) throw new Error("Room not found");
+
+  Object.assign(room, payload);
+  await room.save();
+
+  return room;
+};
+
+
+export const getRoomUserListService = async (roomId: string) => {
+  const room = await Room.findById(roomId);
+  if (!room) throw new Error("Room not found");
+
+  const members = await RoomMember.find({
+    roomId,
+    status: "JOINED"
+  })
+    .populate("userId", "name email avatar")
+    .select("userId role status createdAt")
+    .sort({ createdAt: 1 });
+
+  return members;
+};
+
+
+/* =========================
+   DELETE ROOM
+========================= */
+
+export const deleteRoomService = async (roomId: string) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const room = await Room.findById(roomId).session(session);
+    if (!room) throw new Error("Room not found");
+
+    await room.deleteOne({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return true;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+};

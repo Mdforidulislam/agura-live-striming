@@ -5,7 +5,11 @@ import { USER_ROLES } from "../../../enums/user";
 
 import {
   createRoom,
-  joinRoom
+  deleteRoom,
+  getAllRoomList,
+  getRoomUserList,
+  joinRoom,
+  updateRoom
 } from "./room.controller";
 
 const router = express.Router();
@@ -31,6 +35,31 @@ router.post(
   auth(USER_ROLES.USER),
   joinRoom
 );
+
+router.get(
+  "/get-all-room",
+  auth(USER_ROLES.USER),
+  getAllRoomList
+)
+
+router.get(
+  "/room-user-list",
+  auth(USER_ROLES.USER),
+  getRoomUserList
+)
+
+router.put(
+  "/update-room:/id",
+  auth(USER_ROLES.USER),
+  updateRoom
+);
+
+router.delete(
+  "/deleteRoom:/id",
+  auth(USER_ROLES.USER),
+  deleteRoom
+)
+
 
 
 export const RoomRoutes = router;

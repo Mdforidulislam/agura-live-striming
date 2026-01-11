@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 import { generateAgoraToken } from "../../../helpers/generateAgoraToken";
-import { RoomMember } from "../../modules/room/room.model";
+import { Room, RoomMember } from "../../modules/room/room.model";
 
 /* =========================
    ROOM HANDLER
@@ -12,6 +12,47 @@ import { RoomMember } from "../../modules/room/room.model";
 
 const roomHandler = (io: Server, socket: Socket) => {
         console.log('call the custom server ::>');
+
+  // ================================
+  // GET ROOM USER LIST (SOCKET)
+  // ================================
+  socket.on("join-room", async ({ roomId }) => {
+    try {
+      if (!roomId) {
+        return socket.emit("room-user-list-error", {
+          message: "roomId is required"
+        });
+      }
+
+      const room = await Room.findById(roomId);
+      if (!room) {
+        return socket.emit("room-user-list-error", {
+          message: "Room not found"
+        });
+      }
+
+      const members = await RoomMember.find({
+        roomId,
+        status: "JOINED"
+      })
+        .populate("userId", "name email avatar")
+        .select("userId role status createdAt")
+        .sort({ createdAt: 1 });
+
+      socket.emit("room-user-list", {
+        roomId,
+        members
+      });
+
+    } catch (err: any) {
+      console.error("Get room user list error:", err);
+
+      socket.emit("room-user-list-error", {
+        message: err.message || "Failed to fetch room users"
+      });
+    }
+  });
+
   // ===== Promote Audience → Guest =====
   socket.on("promote-to-guest", async ({ roomId, hostId, targetUserId }: { roomId: string; hostId: string; targetUserId: string }) => {
     try {
@@ -65,20 +106,62 @@ const roomHandler = (io: Server, socket: Socket) => {
     }
   });
 
-//   // ===== Leave Room =====
-//   socket.on("leave-room", async ({ roomId, userId }: { roomId: string; userId: string }) => {
-//     try {
-//       socket.leave(roomId);
+  // ===== Leave Room =====
+  socket.on("leave-room", async ({ roomId, userId }: { roomId: string; userId: string }) => {
+    try {
 
-//       await RoomMember.updateOne({ roomId, userId }, { status: "LEFT" });
+      socket.leave(roomId);
 
-//       socket.to(roomId).emit("user-left", { userId });
-//     } catch (err: any) {
-//       console.error("Leave room error:", err);
-//       socket.emit("error", { message: err.message || "Leave room failed" });
-//     }
-//   });
+      await RoomMember.updateOne({ roomId, userId }, { status: "LEFT" });
 
-};
+      socket.to(roomId).emit("user-left", { userId });
+    } catch (err: any) {
+      console.error("Leave room error:", err);
+      socket.emit("error", { message: err.message || "Leave room failed" });
+    }
+  });
+
+  // ===== ROOM MESSAGE =====
+  socket.on(
+    "room-message",
+    async ({
+      roomId,
+      userId,
+      message
+    }: {
+      roomId: string;
+      userId: string;
+      message: string;
+    }) => {
+      try {
+        if (!message?.trim()) return;
+
+        // optional: validate user still joined
+        const member = await RoomMember.findOne({
+          roomId,
+          userId,
+          status: "JOINED"
+        });
+
+        if (!member) return;
+
+        const payload = {
+          roomId,
+          userId,
+          message,
+          role: member.role,
+          createdAt: new Date()
+        };
+
+        io.to(roomId).emit("room-message-receive", payload);
+      } catch (err) {
+        socket.emit("error", { message: "Message failed" });
+      }
+    }
+  );
+
+}
+
+
 
 export default roomHandler;
