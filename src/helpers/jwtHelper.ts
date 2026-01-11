@@ -10,19 +10,20 @@
 
 // export const jwtHelper = { createToken, verifyToken };
 
-
 import jwt, { JwtPayload, Secret, SignOptions } from 'jsonwebtoken';
 
 interface Payload {
-  [key: string]: any; // generic payload object
+  [key: string]: any;
 }
 
-const createToken = (payload: Payload, secret: any, expireTime: string | number): string => {
-  const options: SignOptions = { expiresIn: expireTime };
+const createToken = (payload: Payload, secret: Secret, expireTime: string | number): string => {
+  const options: SignOptions = { 
+    expiresIn: expireTime as unknown as string // type-cast to satisfy TS
+  };
   return jwt.sign(payload, secret, options);
 };
 
-const verifyToken = (token: string, secret: any): JwtPayload | null => {
+const verifyToken = (token: string, secret: Secret): JwtPayload | null => {
   try {
     const decoded = jwt.verify(token, secret) as JwtPayload;
     return decoded;
