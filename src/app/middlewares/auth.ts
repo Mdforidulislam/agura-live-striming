@@ -12,10 +12,9 @@ const auth = (...roles: string[]) => {
       // Extracting token from authorization header
       const token = req.headers.authorization;
       if (!token) {
-        throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized');
+        throw new AppError(StatusCodes.BAD_REQUEST, 'You are not authorized');
       }
 
- 
       // Verify the token using the jwtHelper
       let decodedUser;
       try {
@@ -29,6 +28,9 @@ const auth = (...roles: string[]) => {
         }
         throw error;
       }
+
+      if(!decodedUser) throw new AppError(StatusCodes.UNAUTHORIZED, 'Token has expired');
+
 
       req.user = decodedUser;
 
